@@ -1,0 +1,67 @@
+choice
+	prompt "Target architecture"
+	default TARGET_X86
+
+	config TARGET_X86
+		bool "x86"
+
+	config TARGET_X86_64
+		bool "x86-64"
+endchoice
+
+config PLATFORM
+	string
+	default x86         if TARGET_X86
+	default x86-64      if TARGET_X86_64
+
+choice
+	prompt "Operating system"
+	default OS_LINUX
+
+	config OS_LINUX
+		bool "Linux"
+endchoice
+
+menu "Build options"
+
+choice
+	prompt "Optimization level"
+	default OPTIMIZATIONS_DISABLED
+
+	config OPTIMIZATIONS_DISABLED
+		bool "None"
+
+	config OPTIMIZATIONS_SIZE
+		bool "Size"
+
+	config OPTIMIZATIONS_FULL
+		bool "Full"
+
+	config OPTIMIZATIONS_DEBUG
+		bool "Debug"
+endchoice
+
+config OPTIMIZATIONS
+	string
+	default "none" if OPTIMIZATIONS_DISABLED
+	default "size" if OPTIMIZATIONS_SIZE
+	default "full" if OPTIMIZATIONS_FULL
+	default "debug" if OPTIMIZATIONS_DEBUG
+
+config FPU
+	bool "FPU"
+	default y
+	help
+	  This enables Floating Point Unit.
+	depends on TARGET_CORTEX_M4
+
+endmenu
+
+menu "Debug options"
+	depends on TARGET_X86 || TARGET_X86_64
+
+config DEBUG
+	bool "Debug messages"
+	default n
+
+endmenu
