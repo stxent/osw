@@ -7,6 +7,7 @@
 #ifndef LIBOSW_HELPERS_SERIAL_STREAM_H_
 #define LIBOSW_HELPERS_SERIAL_STREAM_H_
 /*----------------------------------------------------------------------------*/
+#include <stdint.h>
 #include <interface.h>
 /*----------------------------------------------------------------------------*/
 extern const struct InterfaceClass * const SerialStream;

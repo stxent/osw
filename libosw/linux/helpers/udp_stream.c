@@ -44,8 +44,8 @@ static void streamDeinit(void *);
 static enum result streamCallback(void *, void (*)(void *), void *);
 static enum result streamGet(void *, enum ifOption, void *);
 static enum result streamSet(void *, enum ifOption, const void *);
-static uint32_t streamRead(void *, uint8_t *, uint32_t);
-static uint32_t streamWrite(void *, const uint8_t *, uint32_t);
+static size_t streamRead(void *, void *, size_t);
+static size_t streamWrite(void *, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 static const struct InterfaceClass streamTable = {
     .size = sizeof(struct UdpStream),
@@ -327,7 +327,7 @@ static enum result streamSet(void *object __attribute__((unused)),
   return E_ERROR;
 }
 /*----------------------------------------------------------------------------*/
-static uint32_t streamRead(void *object, uint8_t *buffer, uint32_t length)
+static size_t streamRead(void *object, void *buffer, size_t length)
 {
   struct UdpStream * const interface = object;
   unsigned int bytesRead;
@@ -339,8 +339,7 @@ static uint32_t streamRead(void *object, uint8_t *buffer, uint32_t length)
   return (uint32_t)bytesRead;
 }
 /*----------------------------------------------------------------------------*/
-static uint32_t streamWrite(void *object, const uint8_t *buffer,
-    uint32_t length)
+static size_t streamWrite(void *object, const void *buffer, size_t length)
 {
   struct UdpStream * const interface = object;
   const int bytesWritten = send(interface->clientSocket, buffer, length, 0);

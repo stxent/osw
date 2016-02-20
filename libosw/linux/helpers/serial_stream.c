@@ -81,8 +81,8 @@ static void streamDeinit(void *);
 static enum result streamCallback(void *, void (*)(void *), void *);
 static enum result streamGet(void *, enum ifOption, void *);
 static enum result streamSet(void *, enum ifOption, const void *);
-static uint32_t streamRead(void *, uint8_t *, uint32_t);
-static uint32_t streamWrite(void *, const uint8_t *, uint32_t);
+static size_t streamRead(void *, void *, size_t);
+static size_t streamWrite(void *, const void *, size_t);
 /*----------------------------------------------------------------------------*/
 static const struct InterfaceClass streamTable = {
     .size = sizeof(struct SerialStream),
@@ -174,10 +174,10 @@ static enum result streamInit(void *object, const void *configBase)
   enum result res;
 
   interface->descriptor = open(config->device, O_RDWR | O_NOCTTY | O_NDELAY);
-  if (interface->descriptor == -1)
-    return E_INTERFACE;
-  else
+  if (interface->descriptor != -1)
     fcntl(interface->descriptor, F_SETFL, 0);
+  else
+    return E_INTERFACE;
   DEBUG_PRINT("Port opened: %s\n", config->device);
 
   if ((res = setPortParameters(interface, config)) != E_OK)
@@ -212,16 +212,21 @@ static enum result streamGet(void *object, enum ifOption option, void *data)
 {
   struct SerialStream * const interface = object;
 
-  /* TODO Add ioctl errors checking */
   switch ((enum serialStreamOption)option)
   {
     case IF_SERIAL_CTS:
     {
       int value;
 
-      ioctl(interface->descriptor, TIOCMGET, &value);
-      *(uint32_t *)data = value & TIOCM_CTS ? 1 : 0;
-      return E_OK;
+      if (ioctl(interface->descriptor, TIOCMGET, &value) != -1)
+      {
+        *(uint32_t *)data = (value & TIOCM_CTS) ? 1 : 0;
+        return E_OK;
+      }
+      else
+      {
+        return E_INTERFACE;
+      }
     }
 
     default:
@@ -240,13 +245,18 @@ static enum result streamSet(void *object, enum ifOption option,
     {
       int value;
 
-      ioctl(interface->descriptor, TIOCMGET, &value);
+      if (ioctl(interface->descriptor, TIOCMGET, &value) == -1)
+        return E_INTERFACE;
+
       if (*(const uint32_t *)data)
         value |= TIOCM_RTS;
       else
         value &= ~TIOCM_RTS;
-      ioctl(interface->descriptor, TIOCMSET, &value);
-      return E_OK;
+
+      if (ioctl(interface->descriptor, TIOCMSET, &value) == -1)
+        return E_INTERFACE;
+      else
+        return E_OK;
     }
 
     default:
@@ -254,32 +264,24 @@ static enum result streamSet(void *object, enum ifOption option,
   }
 }
 /*----------------------------------------------------------------------------*/
-static uint32_t streamRead(void *object, uint8_t *buffer, uint32_t length)
+static size_t streamRead(void *object, void *buffer, size_t length)
 {
   struct SerialStream * const interface = object;
-  int result;
+  const ssize_t result = read(interface->descriptor, buffer, length);
 
-  result = read(interface->descriptor, buffer, length);
-  if (result == -1)
-  {
-    //TODO Add error handling
-    return 0;
-  }
-  else
+  if (result != -1)
     return result;
+  else
+    return 0;
 }
 /*----------------------------------------------------------------------------*/
-static uint32_t streamWrite(void *object, const uint8_t *buffer,
-    uint32_t length)
+static size_t streamWrite(void *object, const void *buffer, size_t length)
 {
   struct SerialStream * const interface = object;
-  int result;
+  const ssize_t result = write(interface->descriptor, buffer, length);
 
-  result = write(interface->descriptor, buffer, length);
-  if (result == -1)
-  {
-    return 0;
-  }
-  else
+  if (result != -1)
     return result;
+  else
+    return 0;
 }
