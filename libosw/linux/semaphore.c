@@ -10,7 +10,7 @@
 #include <semaphore.h>
 #include <stdlib.h>
 #include <time.h>
-#include <libosw/semaphore.h>
+#include <osw/semaphore.h>
 /*----------------------------------------------------------------------------*/
 enum result semInit(struct Semaphore *sem, int value)
 {

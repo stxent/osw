@@ -1,14 +1,14 @@
 /*
- * libosw/thread.h
+ * osw/thread.h
  * Copyright (C) 2014 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef LIBOSW_THREAD_H_
-#define LIBOSW_THREAD_H_
+#ifndef OSW_THREAD_H_
+#define OSW_THREAD_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
-#include <error.h>
+#include <xcore/error.h>
 /*----------------------------------------------------------------------------*/
 struct Thread
 {
@@ -28,4 +28,4 @@ void threadTerminate(struct Thread *);
 /*----------------------------------------------------------------------------*/
 void msleep(unsigned int);
 /*----------------------------------------------------------------------------*/
-#endif /* LIBOSW_THREAD_H_ */
+#endif /* OSW_THREAD_H_ */

@@ -10,7 +10,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <time.h>
-#include <libosw/mutex.h>
+#include <osw/mutex.h>
 /*----------------------------------------------------------------------------*/
 enum result mutexInit(struct Mutex *mutex)
 {

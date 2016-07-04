@@ -1,17 +1,17 @@
 /*
- * libosw/helpers/udp_stream.h
+ * osw/helpers/udp_stream.h
  * Copyright (C) 2013 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef LIBOSW_HELPERS_UDP_STREAM_H_
-#define LIBOSW_HELPERS_UDP_STREAM_H_
+#ifndef OSW_HELPERS_UDP_STREAM_H_
+#define OSW_HELPERS_UDP_STREAM_H_
 /*----------------------------------------------------------------------------*/
-#include <containers/byte_queue.h>
-#include <interface.h>
-#include <libosw/mutex.h>
-#include <libosw/semaphore.h>
-#include <libosw/thread.h>
+#include <xcore/containers/byte_queue.h>
+#include <xcore/interface.h>
+#include <osw/mutex.h>
+#include <osw/semaphore.h>
+#include <osw/thread.h>
 /*----------------------------------------------------------------------------*/
 extern const struct InterfaceClass * const UdpStream;
 /*----------------------------------------------------------------------------*/
@@ -41,4 +41,4 @@ struct UdpStream
   bool terminated;
 };
 /*----------------------------------------------------------------------------*/
-#endif /* LIBOSW_HELPERS_UDP_STREAM_H_ */
+#endif /* OSW_HELPERS_UDP_STREAM_H_ */

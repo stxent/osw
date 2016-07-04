@@ -6,10 +6,11 @@
 
 #include <arpa/inet.h>
 #include <poll.h>
+#include <stddef.h>
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <libosw/helpers/udp_stream.h>
+#include <osw/helpers/udp_stream.h>
 /*----------------------------------------------------------------------------*/
 #ifdef CONFIG_DEBUG
 #include <stdio.h>
@@ -293,12 +294,12 @@ static enum result streamGet(void *object, enum ifOption option, void *data)
   {
     case IF_AVAILABLE:
       mutexLock(&interface->mutex);
-      *(uint32_t *)data = byteQueueSize(&interface->rxQueue);
+      *(size_t *)data = byteQueueSize(&interface->rxQueue);
       mutexUnlock(&interface->mutex);
       return E_OK;
 
     case IF_PENDING:
-      *(uint32_t *)data = 0;
+      *(size_t *)data = 0;
       return E_OK;
 
     case IF_STATUS:
@@ -306,17 +307,14 @@ static enum result streamGet(void *object, enum ifOption option, void *data)
       enum result res;
 
       mutexLock(&interface->mutex);
-      if (interface->terminated)
-        res = E_IDLE;
-      else
-        res = E_OK;
+      res = interface->terminated ? E_IDLE : E_OK;
       mutexUnlock(&interface->mutex);
 
       return res;
     }
 
     default:
-      return E_ERROR;
+      return E_INVALID;
   }
 }
 /*----------------------------------------------------------------------------*/
@@ -324,7 +322,7 @@ static enum result streamSet(void *object __attribute__((unused)),
     enum ifOption option __attribute__((unused)),
     const void *data __attribute__((unused)))
 {
-  return E_ERROR;
+  return E_INVALID;
 }
 /*----------------------------------------------------------------------------*/
 static size_t streamRead(void *object, void *buffer, size_t length)

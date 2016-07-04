@@ -1,26 +1,25 @@
 /*
- * libosw/semaphore.h
- * Copyright (C) 2014 xent
+ * osw/mutex.h
+ * Copyright (C) 2012 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef LIBOSW_SEMAPHORE_H_
-#define LIBOSW_SEMAPHORE_H_
+#ifndef OSW_MUTEX_H_
+#define OSW_MUTEX_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
-#include <error.h>
+#include <xcore/error.h>
 /*----------------------------------------------------------------------------*/
-struct Semaphore
+struct Mutex
 {
   void *handle;
 };
 /*----------------------------------------------------------------------------*/
-enum result semInit(struct Semaphore *, int);
-void semDeinit(struct Semaphore *);
+enum result mutexInit(struct Mutex *);
+void mutexDeinit(struct Mutex *);
 /*----------------------------------------------------------------------------*/
-void semPost(struct Semaphore *);
-bool semTryWait(struct Semaphore *, unsigned int);
-int semValue(struct Semaphore *);
-void semWait(struct Semaphore *);
+void mutexLock(struct Mutex *);
+bool mutexTryLock(struct Mutex *, unsigned int);
+void mutexUnlock(struct Mutex *);
 /*----------------------------------------------------------------------------*/
-#endif /* LIBOSW_SEMAPHORE_H_ */
+#endif /* OSW_MUTEX_H_ */

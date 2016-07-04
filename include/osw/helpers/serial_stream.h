@@ -1,14 +1,14 @@
 /*
- * libosw/helpers/serial_stream.h
+ * osw/helpers/serial_stream.h
  * Copyright (C) 2013 xent
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#ifndef LIBOSW_HELPERS_SERIAL_STREAM_H_
-#define LIBOSW_HELPERS_SERIAL_STREAM_H_
+#ifndef OSW_HELPERS_SERIAL_STREAM_H_
+#define OSW_HELPERS_SERIAL_STREAM_H_
 /*----------------------------------------------------------------------------*/
 #include <stdint.h>
-#include <interface.h>
+#include <xcore/interface.h>
 /*----------------------------------------------------------------------------*/
 extern const struct InterfaceClass * const SerialStream;
 /*----------------------------------------------------------------------------*/
@@ -39,4 +39,4 @@ struct SerialStream
   int descriptor;
 };
 /*----------------------------------------------------------------------------*/
-#endif /* LIBOSW_HELPERS_SERIAL_STREAM_H_ */
+#endif /* OSW_HELPERS_SERIAL_STREAM_H_ */

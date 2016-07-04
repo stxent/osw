@@ -11,7 +11,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <time.h>
-#include <libosw/thread.h>
+#include <osw/thread.h>
 /*----------------------------------------------------------------------------*/
 struct ThreadPrivateData
 {

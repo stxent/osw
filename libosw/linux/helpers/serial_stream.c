@@ -9,7 +9,7 @@
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
-#include <libosw/helpers/serial_stream.h>
+#include <osw/helpers/serial_stream.h>
 /*----------------------------------------------------------------------------*/
 #ifdef CONFIG_DEBUG
 #include <stdio.h>
@@ -205,7 +205,7 @@ static enum result streamCallback(void *object __attribute__((unused)),
     void *argument __attribute__((unused)))
 {
   /* Not implemented */
-  return E_ERROR;
+  return E_INVALID;
 }
 /*----------------------------------------------------------------------------*/
 static enum result streamGet(void *object, enum ifOption option, void *data)
@@ -220,7 +220,7 @@ static enum result streamGet(void *object, enum ifOption option, void *data)
 
       if (ioctl(interface->descriptor, TIOCMGET, &value) != -1)
       {
-        *(uint32_t *)data = (value & TIOCM_CTS) ? 1 : 0;
+        *(unsigned int *)data = (value & TIOCM_CTS) ? 1 : 0;
         return E_OK;
       }
       else
@@ -230,7 +230,7 @@ static enum result streamGet(void *object, enum ifOption option, void *data)
     }
 
     default:
-      return E_ERROR;
+      return E_INVALID;
   }
 }
 /*----------------------------------------------------------------------------*/
@@ -248,7 +248,7 @@ static enum result streamSet(void *object, enum ifOption option,
       if (ioctl(interface->descriptor, TIOCMGET, &value) == -1)
         return E_INTERFACE;
 
-      if (*(const uint32_t *)data)
+      if (*(const unsigned int *)data)
         value |= TIOCM_RTS;
       else
         value &= ~TIOCM_RTS;
@@ -260,7 +260,7 @@ static enum result streamSet(void *object, enum ifOption option,
     }
 
     default:
-      return E_ERROR;
+      return E_INVALID;
   }
 }
 /*----------------------------------------------------------------------------*/
