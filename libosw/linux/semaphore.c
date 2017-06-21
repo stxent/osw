@@ -4,15 +4,12 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#define _POSIX_C_SOURCE 200809L
-#define _BSD_SOURCE
-
 #include <semaphore.h>
 #include <stdlib.h>
 #include <time.h>
 #include <osw/semaphore.h>
 /*----------------------------------------------------------------------------*/
-enum result semInit(struct Semaphore *sem, int value)
+enum Result semInit(struct Semaphore *sem, int value)
 {
   sem->handle = malloc(sizeof(sem_t));
   if (!sem->handle)

@@ -27,6 +27,7 @@ ifneq ($(findstring x86,$(PLATFORM)),)
   else
     CPU_FLAGS += -m64
   endif
+  CPU_FLAGS += -D_POSIX_C_SOURCE=200809L
 else ifneq ($(findstring cortex-m,$(PLATFORM)),)
   AR := $(CROSS_COMPILE)ar
   CC := $(CROSS_COMPILE)gcc

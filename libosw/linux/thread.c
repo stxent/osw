@@ -4,9 +4,6 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#define _POSIX_C_SOURCE 200809L
-#define _BSD_SOURCE
-
 #include <limits.h>
 #include <pthread.h>
 #include <stdlib.h>
@@ -20,7 +17,7 @@ struct ThreadPrivateData
   void *argument;
   void (*run)(void *);
 
-  unsigned int size;
+  size_t size;
   bool running;
 };
 /*----------------------------------------------------------------------------*/
@@ -39,8 +36,8 @@ void *threadLauncher(void *object)
   return 0;
 }
 /*----------------------------------------------------------------------------*/
-enum result threadInit(struct Thread *thread, unsigned int size,
-    short int priority __attribute__((unused)), void (*run)(void *),
+enum Result threadInit(struct Thread *thread, size_t size,
+    int priority __attribute__((unused)), void (*run)(void *),
     void *argument)
 {
   struct ThreadPrivateData * const data =
@@ -71,7 +68,7 @@ void threadOnTerminateCallback(struct Thread *thread, void (*callback)(void *),
   thread->onTerminateCallback = callback;
 }
 /*----------------------------------------------------------------------------*/
-enum result threadStart(struct Thread *thread)
+enum Result threadStart(struct Thread *thread)
 {
   struct ThreadPrivateData * const data = thread->handle;
 

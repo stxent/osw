@@ -35,16 +35,16 @@ enum cleanup
 };
 /*----------------------------------------------------------------------------*/
 static void cleanup(struct UdpStream *, enum cleanup);
-static enum result setupSockets(struct UdpStream *,
+static enum Result setupSockets(struct UdpStream *,
     const struct UdpStreamConfig *);
 static void streamTerminateHandler(void *);
 static void streamThread(void *);
 /*----------------------------------------------------------------------------*/
-static enum result streamInit(void *, const void *);
+static enum Result streamInit(void *, const void *);
 static void streamDeinit(void *);
-static enum result streamCallback(void *, void (*)(void *), void *);
-static enum result streamGet(void *, enum ifOption, void *);
-static enum result streamSet(void *, enum ifOption, const void *);
+static enum Result streamSetCallback(void *, void (*)(void *), void *);
+static enum Result streamGetParam(void *, enum IfParameter, void *);
+static enum Result streamSetParam(void *, enum IfParameter, const void *);
 static size_t streamRead(void *, void *, size_t);
 static size_t streamWrite(void *, const void *, size_t);
 /*----------------------------------------------------------------------------*/
@@ -53,9 +53,9 @@ static const struct InterfaceClass streamTable = {
     .init = streamInit,
     .deinit = streamDeinit,
 
-    .callback = streamCallback,
-    .get = streamGet,
-    .set = streamSet,
+    .setCallback = streamSetCallback,
+    .getParam = streamGetParam,
+    .setParam = streamSetParam,
     .read = streamRead,
     .write = streamWrite
 };
@@ -69,24 +69,24 @@ static void cleanup(struct UdpStream *interface, enum cleanup step)
     case CLEANUP_ALL:
     case CLEANUP_THREAD:
       threadDeinit(&interface->thread);
-      /* No break */
+      /* Falls through */
     case CLEANUP_SOCKETS:
       close(interface->serverSocket);
       close(interface->clientSocket);
-      /* No break */
+      /* Falls through */
     case CLEANUP_MUTEX:
       mutexDeinit(&interface->mutex);
-      /* No break */
+      /* Falls through */
     case CLEANUP_SEMAPHORE:
       semDeinit(&interface->semaphore);
-      /* No break */
+      /* Falls through */
     case CLEANUP_QUEUE:
       byteQueueDeinit(&interface->rxQueue);
       break;
   }
 }
 /*----------------------------------------------------------------------------*/
-static enum result setupSockets(struct UdpStream *interface,
+static enum Result setupSockets(struct UdpStream *interface,
     const struct UdpStreamConfig *config)
 {
   const struct timeval timeout = {
@@ -94,7 +94,7 @@ static enum result setupSockets(struct UdpStream *interface,
       .tv_usec = 100
   };
   struct sockaddr_in address;
-  enum result res = E_OK;
+  enum Result res = E_OK;
 
   /* Initialize output socket */
   interface->clientSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -218,11 +218,11 @@ static void streamThread(void *argument)
     interface->callback(interface->callbackArgument);
 }
 /*----------------------------------------------------------------------------*/
-static enum result streamInit(void *object, const void *configBase)
+static enum Result streamInit(void *object, const void *configBase)
 {
   const struct UdpStreamConfig * const config = configBase;
   struct UdpStream * const interface = object;
-  enum result res;
+  enum Result res;
 
   interface->callback = 0;
   interface->terminated = false;
@@ -276,7 +276,7 @@ static void streamDeinit(void *object)
   cleanup(interface, CLEANUP_ALL);
 }
 /*----------------------------------------------------------------------------*/
-static enum result streamCallback(void *object, void (*callback)(void *),
+static enum Result streamSetCallback(void *object, void (*callback)(void *),
     void *argument)
 {
   struct UdpStream * const interface = object;
@@ -286,7 +286,8 @@ static enum result streamCallback(void *object, void (*callback)(void *),
   return E_OK;
 }
 /*----------------------------------------------------------------------------*/
-static enum result streamGet(void *object, enum ifOption option, void *data)
+static enum Result streamGetParam(void *object, enum IfParameter option,
+    void *data)
 {
   struct UdpStream *interface = object;
 
@@ -304,7 +305,7 @@ static enum result streamGet(void *object, enum ifOption option, void *data)
 
     case IF_STATUS:
     {
-      enum result res;
+      enum Result res;
 
       mutexLock(&interface->mutex);
       res = interface->terminated ? E_IDLE : E_OK;
@@ -318,8 +319,8 @@ static enum result streamGet(void *object, enum ifOption option, void *data)
   }
 }
 /*----------------------------------------------------------------------------*/
-static enum result streamSet(void *object __attribute__((unused)),
-    enum ifOption option __attribute__((unused)),
+static enum Result streamSetParam(void *object __attribute__((unused)),
+    enum IfParameter option __attribute__((unused)),
     const void *data __attribute__((unused)))
 {
   return E_INVALID;

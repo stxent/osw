@@ -15,7 +15,7 @@ struct Mutex
   void *handle;
 };
 /*----------------------------------------------------------------------------*/
-enum result mutexInit(struct Mutex *);
+enum Result mutexInit(struct Mutex *);
 void mutexDeinit(struct Mutex *);
 /*----------------------------------------------------------------------------*/
 void mutexLock(struct Mutex *);

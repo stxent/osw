@@ -73,14 +73,14 @@ static const struct StreamRateEntry rateList[] = {
 };
 /*----------------------------------------------------------------------------*/
 static void configurePort(struct SerialStream *);
-static enum result setPortParameters(struct SerialStream *,
+static enum Result setPortParameters(struct SerialStream *,
     const struct SerialStreamConfig *);
 /*----------------------------------------------------------------------------*/
-static enum result streamInit(void *, const void *);
+static enum Result streamInit(void *, const void *);
 static void streamDeinit(void *);
-static enum result streamCallback(void *, void (*)(void *), void *);
-static enum result streamGet(void *, enum ifOption, void *);
-static enum result streamSet(void *, enum ifOption, const void *);
+static enum Result streamSetCallback(void *, void (*)(void *), void *);
+static enum Result streamGetParam(void *, enum IfParameter, void *);
+static enum Result streamSetParam(void *, enum IfParameter, const void *);
 static size_t streamRead(void *, void *, size_t);
 static size_t streamWrite(void *, const void *, size_t);
 /*----------------------------------------------------------------------------*/
@@ -89,9 +89,9 @@ static const struct InterfaceClass streamTable = {
     .init = streamInit,
     .deinit = streamDeinit,
 
-    .callback = streamCallback,
-    .get = streamGet,
-    .set = streamSet,
+    .setCallback = streamSetCallback,
+    .getParam = streamGetParam,
+    .setParam = streamSetParam,
     .read = streamRead,
     .write = streamWrite
 };
@@ -121,7 +121,7 @@ static void configurePort(struct SerialStream *interface)
   tcsetattr(interface->descriptor, TCSANOW, &options);
 }
 /*----------------------------------------------------------------------------*/
-static enum result setPortParameters(struct SerialStream *interface,
+static enum Result setPortParameters(struct SerialStream *interface,
     const struct SerialStreamConfig *config)
 {
   const struct StreamRateEntry *entry = rateList;
@@ -142,19 +142,22 @@ static enum result setPortParameters(struct SerialStream *interface,
 
   tcgetattr(interface->descriptor, &options);
 
-  switch (config->parity)
+  switch ((enum SerialStreamParity)config->parity)
   {
     case SERIAL_PARITY_NONE:
       options.c_cflag &= ~PARENB; /* Disable parity */
       break;
+
     case SERIAL_PARITY_ODD:
       options.c_cflag |= PARENB; /* Use parity */
       options.c_cflag |= PARODD; /* Odd parity */
       break;
+
     case SERIAL_PARITY_EVEN:
       options.c_cflag |= PARENB; /* Use parity */
       options.c_cflag &= ~PARODD; /* Even parity */
       break;
+
     default:
       return E_VALUE;
   }
@@ -167,11 +170,11 @@ static enum result setPortParameters(struct SerialStream *interface,
   return E_OK;
 }
 /*----------------------------------------------------------------------------*/
-static enum result streamInit(void *object, const void *configBase)
+static enum Result streamInit(void *object, const void *configBase)
 {
   const struct SerialStreamConfig * const config = configBase;
   struct SerialStream * const interface = object;
-  enum result res;
+  enum Result res;
 
   interface->descriptor = open(config->device, O_RDWR | O_NOCTTY | O_NDELAY);
   if (interface->descriptor != -1)
@@ -200,7 +203,7 @@ static void streamDeinit(void *object)
   close(interface->descriptor);
 }
 /*----------------------------------------------------------------------------*/
-static enum result streamCallback(void *object __attribute__((unused)),
+static enum Result streamSetCallback(void *object __attribute__((unused)),
     void (*callback)(void *) __attribute__((unused)),
     void *argument __attribute__((unused)))
 {
@@ -208,11 +211,12 @@ static enum result streamCallback(void *object __attribute__((unused)),
   return E_INVALID;
 }
 /*----------------------------------------------------------------------------*/
-static enum result streamGet(void *object, enum ifOption option, void *data)
+static enum Result streamGetParam(void *object, enum IfParameter option,
+    void *data)
 {
   struct SerialStream * const interface = object;
 
-  switch ((enum serialStreamOption)option)
+  switch ((enum SerialStreamOption)option)
   {
     case IF_SERIAL_CTS:
     {
@@ -234,12 +238,12 @@ static enum result streamGet(void *object, enum ifOption option, void *data)
   }
 }
 /*----------------------------------------------------------------------------*/
-static enum result streamSet(void *object, enum ifOption option,
+static enum Result streamSetParam(void *object, enum IfParameter option,
     const void *data)
 {
   struct SerialStream * const interface = object;
 
-  switch ((enum serialStreamOption)option)
+  switch ((enum SerialStreamOption)option)
   {
     case IF_SERIAL_RTS:
     {

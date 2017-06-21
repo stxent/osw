@@ -12,16 +12,16 @@
 /*----------------------------------------------------------------------------*/
 extern const struct InterfaceClass * const SerialStream;
 /*----------------------------------------------------------------------------*/
-enum serialStreamParity
+enum SerialStreamParity
 {
   SERIAL_PARITY_NONE = 0,
   SERIAL_PARITY_ODD,
   SERIAL_PARITY_EVEN
 };
 /*----------------------------------------------------------------------------*/
-enum serialStreamOption
+enum SerialStreamOption
 {
-  IF_SERIAL_CTS = IF_OPTION_END,
+  IF_SERIAL_CTS = IF_PARAMETER_END,
   IF_SERIAL_RTS
 };
 /*----------------------------------------------------------------------------*/
@@ -29,7 +29,7 @@ struct SerialStreamConfig
 {
   const char *device;
   uint32_t rate;
-  enum serialStreamParity parity;
+  enum SerialStreamParity parity;
 };
 /*----------------------------------------------------------------------------*/
 struct SerialStream

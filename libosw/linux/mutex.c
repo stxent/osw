@@ -4,15 +4,12 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#define _POSIX_C_SOURCE 200809L
-#define _BSD_SOURCE
-
 #include <pthread.h>
 #include <stdlib.h>
 #include <time.h>
 #include <osw/mutex.h>
 /*----------------------------------------------------------------------------*/
-enum result mutexInit(struct Mutex *mutex)
+enum Result mutexInit(struct Mutex *mutex)
 {
   mutex->handle = malloc(sizeof(pthread_mutex_t));
   if (!mutex->handle)

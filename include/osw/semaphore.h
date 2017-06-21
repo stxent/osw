@@ -15,7 +15,7 @@ struct Semaphore
   void *handle;
 };
 /*----------------------------------------------------------------------------*/
-enum result semInit(struct Semaphore *, int);
+enum Result semInit(struct Semaphore *, int);
 void semDeinit(struct Semaphore *);
 /*----------------------------------------------------------------------------*/
 void semPost(struct Semaphore *);

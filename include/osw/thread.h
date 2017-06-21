@@ -8,6 +8,7 @@
 #define OSW_THREAD_H_
 /*----------------------------------------------------------------------------*/
 #include <stdbool.h>
+#include <stddef.h>
 #include <xcore/error.h>
 /*----------------------------------------------------------------------------*/
 struct Thread
@@ -18,12 +19,11 @@ struct Thread
   void *handle;
 };
 /*----------------------------------------------------------------------------*/
-enum result threadInit(struct Thread *, unsigned int, short int,
-    void (*)(void *), void *);
+enum Result threadInit(struct Thread *, size_t, int, void (*)(void *), void *);
 void threadDeinit(struct Thread *);
 /*----------------------------------------------------------------------------*/
 void threadOnTerminateCallback(struct Thread *, void (*)(void *), void *);
-enum result threadStart(struct Thread *);
+enum Result threadStart(struct Thread *);
 void threadTerminate(struct Thread *);
 /*----------------------------------------------------------------------------*/
 void msleep(unsigned int);
