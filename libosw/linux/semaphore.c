@@ -4,34 +4,10 @@
  * Project is distributed under the terms of the GNU General Public License v3.0
  */
 
-#include <semaphore.h>
-#include <stdlib.h>
 #include <time.h>
 #include <osw/semaphore.h>
 /*----------------------------------------------------------------------------*/
-enum Result semInit(struct Semaphore *sem, int value)
-{
-  sem->handle = malloc(sizeof(sem_t));
-  if (!sem->handle)
-    return E_MEMORY;
-  if (sem_init(sem->handle, 0, value))
-    return E_ERROR;
-
-  return E_OK;
-}
-/*----------------------------------------------------------------------------*/
-void semDeinit(struct Semaphore *sem)
-{
-  sem_destroy(sem->handle);
-  free(sem->handle);
-}
-/*----------------------------------------------------------------------------*/
-void semPost(struct Semaphore *sem)
-{
-  sem_post(sem->handle);
-}
-/*----------------------------------------------------------------------------*/
-bool semTryWait(struct Semaphore *sem, unsigned int interval)
+bool semTryWait(struct Semaphore *semaphore, unsigned int interval)
 {
   int res;
 
@@ -49,23 +25,12 @@ bool semTryWait(struct Semaphore *sem, unsigned int interval)
       ++timestamp.tv_sec;
     }
 
-    res = sem_timedwait(sem->handle, &timestamp);
+    res = sem_timedwait(&semaphore->handle, &timestamp);
   }
   else
-    res = sem_trywait(sem->handle);
+  {
+    res = sem_trywait(&semaphore->handle);
+  }
 
-  return res ? false : true;
-}
-/*----------------------------------------------------------------------------*/
-int semValue(struct Semaphore *sem)
-{
-  int value = 1;
-
-  sem_getvalue(sem->handle, &value);
-  return value;
-}
-/*----------------------------------------------------------------------------*/
-void semWait(struct Semaphore *sem)
-{
-  sem_wait(sem->handle);
+  return res == 0;
 }

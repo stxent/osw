@@ -5,75 +5,48 @@
  */
 
 #include <limits.h>
-#include <pthread.h>
-#include <stdlib.h>
-#include <time.h>
 #include <osw/thread.h>
 /*----------------------------------------------------------------------------*/
-struct ThreadPrivateData
-{
-  pthread_t handle;
-
-  void *argument;
-  void (*run)(void *);
-
-  size_t size;
-  bool running;
-};
-/*----------------------------------------------------------------------------*/
-void *threadLauncher(void *object)
+static void *threadLauncher(void *object)
 {
   struct Thread * const thread = object;
-  struct ThreadPrivateData * const data = thread->handle;
 
   /* Configure the thread */
   pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, 0);
 
   /* Run user defined function */
-  data->running = true;
-  data->run(data->argument);
+  thread->running = true;
+  thread->function(thread->functionArgument);
 
   return 0;
 }
 /*----------------------------------------------------------------------------*/
-enum Result threadInit(struct Thread *thread, size_t size,
-    int priority __attribute__((unused)), void (*run)(void *),
-    void *argument)
+void threadInit(struct Thread *thread, size_t size,
+    int priority __attribute__((unused)), void (*function)(void *),
+    void *functionArgument)
 {
-  struct ThreadPrivateData * const data =
-      malloc(sizeof(struct ThreadPrivateData));
-
-  if (!data)
-    return E_MEMORY;
-
-  data->argument = argument;
-  data->run = run;
-  data->size = size;
-  data->running = false;
-  thread->handle = data;
-
-  return E_OK;
+  thread->functionArgument = functionArgument;
+  thread->function = function;
+  thread->stackSize = size;
+  thread->running = false;
 }
 /*----------------------------------------------------------------------------*/
 void threadDeinit(struct Thread *thread)
 {
   threadTerminate(thread);
-  free(thread->handle);
 }
 /*----------------------------------------------------------------------------*/
 void threadOnTerminateCallback(struct Thread *thread, void (*callback)(void *),
-    void *argument)
+    void *callbackArgument)
 {
-  thread->onTerminateArgument = argument;
+  thread->onTerminateArgument = callbackArgument;
   thread->onTerminateCallback = callback;
 }
 /*----------------------------------------------------------------------------*/
 enum Result threadStart(struct Thread *thread)
 {
-  struct ThreadPrivateData * const data = thread->handle;
-
   /* Check whether the thread is already started */
-  if (data->running)
+  if (thread->running)
     return E_BUSY;
 
   pthread_attr_t attributes;
@@ -85,34 +58,29 @@ enum Result threadStart(struct Thread *thread)
 
   /* Set a new stack size */
   result = pthread_attr_setstacksize(&attributes,
-      PTHREAD_STACK_MIN + data->size);
+      PTHREAD_STACK_MIN + thread->stackSize);
   if (result != 0)
     return E_VALUE;
 
   /* Create and start a new thread */
-  result = pthread_create(&data->handle, &attributes, threadLauncher, thread);
+  result = pthread_create(&thread->handle, &attributes, threadLauncher, thread);
   pthread_attr_destroy(&attributes);
 
-  if (result != 0)
-    return E_ERROR;
-
-  return E_OK;
+  return result == 0 ? E_OK : E_ERROR;
 }
 /*----------------------------------------------------------------------------*/
 void threadTerminate(struct Thread *thread)
 {
-  struct ThreadPrivateData * const data = thread->handle;
-
-  if (!data->running)
+  if (!thread->running)
     return;
 
   if (thread->onTerminateCallback)
     thread->onTerminateCallback(thread->onTerminateArgument);
   else
-    pthread_cancel(data->handle);
+    pthread_cancel(thread->handle);
 
-  pthread_join(data->handle, 0);
-  data->running = false;
+  pthread_join(thread->handle, 0);
+  thread->running = false;
 }
 /*----------------------------------------------------------------------------*/
 void msleep(unsigned int interval)
