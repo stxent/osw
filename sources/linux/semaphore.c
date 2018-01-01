@@ -7,17 +7,17 @@
 #include <time.h>
 #include <osw/semaphore.h>
 /*----------------------------------------------------------------------------*/
-bool semTryWait(struct Semaphore *semaphore, unsigned int interval)
+bool semTryWait(struct Semaphore *semaphore, unsigned int timeout)
 {
   int res;
 
-  if (interval)
+  if (timeout)
   {
     struct timespec timestamp;
 
     clock_gettime(CLOCK_REALTIME, &timestamp);
-    timestamp.tv_sec += interval / 1000;
-    timestamp.tv_nsec += (interval % 1000) * 1000000;
+    timestamp.tv_sec += timeout / 1000;
+    timestamp.tv_nsec += (timeout % 1000) * 1000000;
 
     if (timestamp.tv_nsec >= 1000000000)
     {

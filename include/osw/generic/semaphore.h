@@ -34,26 +34,54 @@ static inline void semPost(struct Semaphore *sem)
   __atomic_fetch_add(&sem->value, 1, __ATOMIC_SEQ_CST);
 }
 
-static inline bool semTryWait(struct Semaphore *sem __attribute__((unused)),
-    unsigned int value __attribute__((unused)))
+static inline bool semTryWait(struct Semaphore *sem,
+    unsigned int timeout)
 {
-  while (1); /* TODO Unimplemented */
+  bool acquired = true;
 
-  return false;
+  if (!timeout)
+  {
+    int value;
+
+    do
+    {
+      __atomic_load(&sem->value, &value, __ATOMIC_SEQ_CST);
+
+      if (value <= 0)
+      {
+        acquired = false;
+        break;
+      }
+    }
+    while (!__atomic_compare_exchange_n(&sem->value, &value,
+        value - 1, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST));
+  }
+  else
+  {
+    /* TODO Unimplemented */
+    while (1);
+  }
+
+  return acquired;
 }
 
 static inline int semValue(struct Semaphore *sem)
 {
   int value;
-
   __atomic_load(&sem->value, &value, __ATOMIC_SEQ_CST);
   return value;
 }
 
 static inline void semWait(struct Semaphore *sem)
 {
-  while (semValue(sem) <= 0);
-  __atomic_fetch_sub(&sem->value, 1, __ATOMIC_SEQ_CST);
+  int value;
+
+  do
+  {
+    __atomic_load(&sem->value, &value, __ATOMIC_SEQ_CST);
+  }
+  while (value <= 0 || !__atomic_compare_exchange_n(&sem->value, &value,
+      value - 1, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST));
 }
 
 END_DECLS
