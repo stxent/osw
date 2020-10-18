@@ -3,7 +3,13 @@
 
 string(TOLOWER ${CMAKE_SYSTEM_NAME} OS_TYPE)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DOS_TYPE=${OS_TYPE}")
 file(GLOB_RECURSE SOURCE_FILES "${OS_TYPE}/*.c")
-add_library(sources OBJECT ${SOURCE_FILES})
+add_library(osw_generic OBJECT ${SOURCE_FILES})
+target_compile_definitions(osw_generic PRIVATE -DOS_TYPE=${OS_TYPE})
+target_include_directories(osw_generic PUBLIC
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(osw_generic PUBLIC xcore)
+install(TARGETS osw_generic EXPORT osw-targets)
 include("${OS_TYPE}/CMakeLists.txt" OPTIONAL)
