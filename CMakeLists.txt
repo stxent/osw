@@ -29,6 +29,7 @@ endif()
 
 add_subdirectory(sources)
 add_library(${PROJECT_NAME} $<TARGET_OBJECTS:osw_generic>)
+target_link_libraries(${PROJECT_NAME} PUBLIC osw_generic)
 
 # Library installation configuration
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/osw
