@@ -5,3 +5,11 @@
  */
 
 #include <osw/semaphore.h>
+/*----------------------------------------------------------------------------*/
+enum Result semInit(struct Semaphore *, int) __attribute__((weak));
+/*----------------------------------------------------------------------------*/
+enum Result semInit(struct Semaphore *sem, int value)
+{
+  sem->value = value;
+  return E_OK;
+}

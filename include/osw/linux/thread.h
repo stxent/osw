@@ -7,10 +7,10 @@
 #ifndef OSW_LINUX_THREAD_H_
 #define OSW_LINUX_THREAD_H_
 /*----------------------------------------------------------------------------*/
-#include <pthread.h>
-#include <stdbool.h>
 #include <xcore/helpers.h>
 #include <xcore/error.h>
+#include <pthread.h>
+#include <stdbool.h>
 /*----------------------------------------------------------------------------*/
 struct Thread
 {

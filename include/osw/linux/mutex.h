@@ -7,10 +7,10 @@
 #ifndef OSW_LINUX_MUTEX_H_
 #define OSW_LINUX_MUTEX_H_
 /*----------------------------------------------------------------------------*/
-#include <pthread.h>
-#include <stdbool.h>
 #include <xcore/helpers.h>
 #include <xcore/error.h>
+#include <pthread.h>
+#include <stdbool.h>
 /*----------------------------------------------------------------------------*/
 struct Mutex
 {
@@ -19,21 +19,13 @@ struct Mutex
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
+enum Result mutexInit(struct Mutex *);
+void mutexDeinit(struct Mutex *);
 bool mutexTryLock(struct Mutex *, unsigned int);
 
 END_DECLS
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
-
-static inline enum Result mutexInit(struct Mutex *mutex)
-{
-  return pthread_mutex_init(&mutex->handle, 0) == 0 ? E_OK : E_ERROR;
-}
-
-static inline void mutexDeinit(struct Mutex *mutex)
-{
-  pthread_mutex_destroy(&mutex->handle);
-}
 
 static inline void mutexLock(struct Mutex *mutex)
 {

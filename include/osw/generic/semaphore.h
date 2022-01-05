@@ -7,9 +7,9 @@
 #ifndef OSW_GENERIC_SEMAPHORE_H_
 #define OSW_GENERIC_SEMAPHORE_H_
 /*----------------------------------------------------------------------------*/
-#include <stdbool.h>
 #include <xcore/helpers.h>
 #include <xcore/error.h>
+#include <stdbool.h>
 /*----------------------------------------------------------------------------*/
 struct Semaphore
 {
@@ -18,14 +18,13 @@ struct Semaphore
 /*----------------------------------------------------------------------------*/
 BEGIN_DECLS
 
-static inline enum Result semInit(struct Semaphore *sem, int value)
-{
-  sem->value = value;
-  return E_OK;
-}
+enum Result semInit(struct Semaphore *, int);
 
-static inline void semDeinit(struct Semaphore *sem
-    __attribute__((unused)))
+END_DECLS
+/*----------------------------------------------------------------------------*/
+BEGIN_DECLS
+
+static inline void semDeinit(struct Semaphore *sem __attribute__((unused)))
 {
 }
 

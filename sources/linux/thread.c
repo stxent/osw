@@ -4,8 +4,11 @@
  * Project is distributed under the terms of the MIT License
  */
 
-#include <limits.h>
 #include <osw/thread.h>
+#include <limits.h>
+/*----------------------------------------------------------------------------*/
+void threadInit(struct Thread *, size_t, int, void (*)(void *), void *)
+    __attribute__((weak));
 /*----------------------------------------------------------------------------*/
 static void *threadLauncher(void *object)
 {

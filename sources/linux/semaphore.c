@@ -4,8 +4,20 @@
  * Project is distributed under the terms of the MIT License
  */
 
-#include <time.h>
 #include <osw/semaphore.h>
+#include <time.h>
+/*----------------------------------------------------------------------------*/
+enum Result semInit(struct Semaphore *, int) __attribute__((weak));
+/*----------------------------------------------------------------------------*/
+enum Result semInit(struct Semaphore *sem, int value)
+{
+  return sem_init(&sem->handle, 0, value) == 0 ? E_OK : E_ERROR;
+}
+/*----------------------------------------------------------------------------*/
+void semDeinit(struct Semaphore *sem)
+{
+  sem_destroy(&sem->handle);
+}
 /*----------------------------------------------------------------------------*/
 bool semTryWait(struct Semaphore *semaphore, unsigned int timeout)
 {
