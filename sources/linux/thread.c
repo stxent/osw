@@ -28,8 +28,9 @@ void threadInit(struct Thread *thread, size_t size,
     int priority __attribute__((unused)), void (*function)(void *),
     void *functionArgument)
 {
-  thread->functionArgument = functionArgument;
+  thread->onTerminateCallback = 0;
   thread->function = function;
+  thread->functionArgument = functionArgument;
   thread->stackSize = size;
   thread->running = false;
 }
