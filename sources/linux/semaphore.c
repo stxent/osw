@@ -21,7 +21,7 @@ void semDeinit(struct Semaphore *sem)
 /*----------------------------------------------------------------------------*/
 bool semTryWait(struct Semaphore *semaphore, unsigned int timeout)
 {
-  int res;
+  int result;
 
   if (timeout)
   {
@@ -37,12 +37,12 @@ bool semTryWait(struct Semaphore *semaphore, unsigned int timeout)
       ++timestamp.tv_sec;
     }
 
-    res = sem_timedwait(&semaphore->handle, &timestamp);
+    result = sem_timedwait(&semaphore->handle, &timestamp);
   }
   else
   {
-    res = sem_trywait(&semaphore->handle);
+    result = sem_trywait(&semaphore->handle);
   }
 
-  return res == 0;
+  return result == 0;
 }

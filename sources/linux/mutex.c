@@ -11,7 +11,7 @@ enum Result mutexInit(struct Mutex *) __attribute__((weak));
 /*----------------------------------------------------------------------------*/
 enum Result mutexInit(struct Mutex *mutex)
 {
-  return pthread_mutex_init(&mutex->handle, 0) == 0 ? E_OK : E_ERROR;
+  return pthread_mutex_init(&mutex->handle, NULL) == 0 ? E_OK : E_ERROR;
 }
 /*----------------------------------------------------------------------------*/
 void mutexDeinit(struct Mutex *mutex)
@@ -21,7 +21,7 @@ void mutexDeinit(struct Mutex *mutex)
 /*----------------------------------------------------------------------------*/
 bool mutexTryLock(struct Mutex *mutex, unsigned int interval)
 {
-  int res;
+  int result;
 
   if (interval)
   {
@@ -37,12 +37,12 @@ bool mutexTryLock(struct Mutex *mutex, unsigned int interval)
       ++timestamp.tv_sec;
     }
 
-    res = pthread_mutex_timedlock(&mutex->handle, &timestamp);
+    result = pthread_mutex_timedlock(&mutex->handle, &timestamp);
   }
   else
   {
-    res = pthread_mutex_trylock(&mutex->handle);
+    result = pthread_mutex_trylock(&mutex->handle);
   }
 
-  return res == 0;
+  return result == 0;
 }
